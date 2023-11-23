@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payment-service-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: payment-service
+  template:
+    metadata:
+      labels:
+        app: payment-service
+    spec:
+      containers:
+        - name: payment-service
+          image: ghcr.io/kloe-b/p4-payment-microservice/p4-payment-microserivce:latest
+          ports:
+            - containerPort: 8080  
+          env:
+            - name: SECRET_KEY
+              value: "your_secret_key"
+            - name: PORT
+              value: "8080"
+            - name: REDIS_HOST
+              value: "redis-service.default.svc"
+            - name: REDIS_PORT
+              value: "6379"
+      imagePullSecrets:
+        - name: regcred
+            
