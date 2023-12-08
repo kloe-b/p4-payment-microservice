@@ -5,13 +5,19 @@ import datetime
 db = SQLAlchemy()
 bcrypt = Bcrypt()
 
-# Payment model
-class Payment(db.Model):
+class Pay(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     order_id = db.Column(db.Integer, nullable=False)
     status = db.Column(db.String(50), nullable=False, default='pending')
     amount = db.Column(db.Float, nullable=False)
-
+    @staticmethod
+    def get_or_create(payment_id,order_id,amount):
+        payment = Pay.query.get(payment_id)
+        if not payment:
+            payment = Pay(id=payment_id,order_id=order_id,status='pending',amount=amount)
+            db.session.add(payment)
+            db.session.commit()
+        return payment
     def to_dict(self):
         return {
             'id': self.id,
@@ -21,7 +27,7 @@ class Payment(db.Model):
         }
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    credits = db.Column(db.Float, default=100.0)  # Default initial credits
+    credits = db.Column(db.Float, default=100.0)  
 
     @staticmethod
     def get_or_create(user_id):
